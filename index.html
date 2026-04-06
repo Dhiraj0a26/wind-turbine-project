@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wind Turbine — Predictive Maintenance</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Syne:wght@400;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+<!-- ══════════════ HEADER ══════════════ -->
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">
+      <span class="logo-icon">⚙</span>
+      <div>
+        <div class="logo-title">TurbineGuard</div>
+        <div class="logo-sub">Predictive Maintenance System</div>
+      </div>
+    </div>
+    <div class="header-status">
+      <span class="api-dot" id="apiDot"></span>
+      <span class="api-label" id="apiLabel">Connecting…</span>
+      <div class="model-selector-wrap">
+        <select id="modelSelect" class="model-select">
+          <option value="random_forest">Random Forest</option>
+          <option value="gradient_boosting">Gradient Boosting</option>
+          <option value="decision_tree">Decision Tree</option>
+          <option value="logistic_regression">Logistic Regression</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════════ MAIN ══════════════ -->
+<main class="main">
+
+  <!-- LEFT PANEL – sensor controls -->
+  <section class="panel panel-left">
+    <div class="panel-title">
+      <span class="panel-icon">🎛</span> Sensor Input Console
+    </div>
+
+    <div class="sliders-grid" id="slidersGrid">
+      <!-- Sliders injected by JS -->
+    </div>
+
+    <button class="predict-btn" id="predictBtn">
+      <span class="btn-icon">⚡</span> Analyse Machine State
+    </button>
+  </section>
+
+  <!-- RIGHT PANEL – results -->
+  <section class="panel panel-right">
+
+    <!-- Status Banner -->
+    <div class="status-banner" id="statusBanner">
+      <div class="banner-icon" id="bannerIcon">🌬</div>
+      <div class="banner-text">
+        <div class="banner-title" id="bannerTitle">Awaiting Analysis</div>
+        <div class="banner-sub"  id="bannerSub">Adjust sensors and click Analyse</div>
+      </div>
+    </div>
+
+    <!-- KPI Row -->
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-val" id="kpiProb">—</div>
+        <div class="kpi-lbl">Failure Probability</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-val" id="kpiHealth">—</div>
+        <div class="kpi-lbl">Health Score</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-val" id="kpiRisk">—</div>
+        <div class="kpi-lbl">Risk Level</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-val" id="kpiTime">—</div>
+        <div class="kpi-lbl">Response Time</div>
+      </div>
+    </div>
+
+    <!-- Health Gauge -->
+    <div class="gauge-wrap">
+      <canvas id="gaugeCanvas" width="280" height="160"></canvas>
+      <div class="gauge-center-text">
+        <div id="gaugeScore">—</div>
+        <div class="gauge-unit">/ 100</div>
+      </div>
+    </div>
+
+    <!-- Probability Bar -->
+    <div class="prob-section">
+      <div class="prob-label-row">
+        <span>Normal</span><span>Failure Probability</span><span>Failure</span>
+      </div>
+      <div class="prob-track">
+        <div class="prob-fill" id="probFill" style="width:0%"></div>
+        <div class="prob-thumb" id="probThumb" style="left:0%"></div>
+      </div>
+    </div>
+
+    <!-- Sensor Status Grid -->
+    <div class="section-title">Machine State — Per Sensor</div>
+    <div class="sensor-grid" id="sensorGrid">
+      <!-- Filled by JS -->
+    </div>
+
+    <!-- Alert Messages -->
+    <div class="alerts-box" id="alertsBox" style="display:none">
+      <div class="alerts-title">⚠ Active Alerts</div>
+      <div id="alertsList"></div>
+    </div>
+
+    <!-- Recommendation -->
+    <div class="recommendation" id="recommendation" style="display:none">
+      <div class="rec-label">Recommended Action</div>
+      <div class="rec-text" id="recText"></div>
+    </div>
+
+    <!-- Model info footer -->
+    <div class="result-footer" id="resultFooter" style="display:none">
+      Model: <strong id="footerModel">—</strong> &nbsp;·&nbsp;
+      Features: <strong id="footerFeatures">—</strong> &nbsp;·&nbsp;
+      Processed in: <strong id="footerTime">—</strong>
+    </div>
+
+  </section>
+</main>
+
+<!-- ══════════════ BOTTOM – Model Comparison ══════════════ -->
+<section class="comparison-section">
+  <div class="comparison-title">📊 Model Performance Comparison</div>
+  <div class="table-wrap">
+    <table class="comparison-table" id="comparisonTable">
+      <thead>
+        <tr>
+          <th>Model</th>
+          <th>Accuracy</th>
+          <th>Precision</th>
+          <th>Recall</th>
+          <th>F1-Score</th>
+          <th>ROC-AUC</th>
+        </tr>
+      </thead>
+      <tbody id="comparisonBody">
+        <tr><td colspan="6" class="loading-cell">Loading model data…</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Feature Importance Chart -->
+  <div class="fi-wrap">
+    <div class="fi-title">🌲 Random Forest — Feature Importances</div>
+    <div id="featureChart"></div>
+  </div>
+</section>
+
+<footer class="footer">
+  Wind Turbine Predictive Maintenance System &nbsp;·&nbsp;
+  FastAPI + Vanilla JS &nbsp;·&nbsp;
+  scikit-learn ML Backend
+</footer>
+
+<script src="js/app.js"></script>
+</body>
+</html>
